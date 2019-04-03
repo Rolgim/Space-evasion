@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+    	<title>Space evasion</title>
+    	<style>
+    	* { padding: 0; margin: 0; }
+    	canvas { background: #eee; display: block; margin: 0 auto; }
+    	</style>
+    	<a src="chargement0.html"></a>
+	</head>
+	<body>
+		<audio id="player" ></audio> 
+		<canvas id="myCanvas" width="700" height="600"></canvas>
+		<script>
+			//jeu niveau 1
+			var background = new Image(); 
+			background.src = 'jeu.jpg';
+			var canvas = document.getElementById("myCanvas");
+			var ctx = canvas.getContext("2d");
+			//son
+			var son= document.getElementById("player");
+			//score and lives
+			var score=10000;
+			var lives=3;
+			//ball
+			var ballRadius = 10;
+			var x = canvas.width/2;
+			var y = canvas.height-30;
+			var dx = 2;
+			var dy = -2;
+			//paddle 1
+			var paddle1Height = 10;
+			var paddle1Width = 75;
+			var paddle1X = (canvas.width-paddle1Width)/2;
+			var paddle1Y=canvas.height-10;
+			//paddle 2
+			var paddle2Height = 10;
+			var paddle2Width = 500;
+			var paddle2X = (canvas.width-paddle2Width)/2;
+			var paddle2Y=canvas.height-500;
+			//loose rectangle
+			var looseHeight=10;
+			//win rectangle
+			var winHeight=10;
+			//control
+			var topPressed=false;
+			var downPressed=false;
+			var rightPressed = false;
+			var leftPressed = false;
+			var paddleSelected = 1;
+
+
+			document.addEventListener("keydown", keyDownHandler, false);
+			document.addEventListener("keyup", keyUpHandler, false);
+
+
+			function keyDownHandler(e) {
+			    if(e.keyCode == 39) {
+			        rightPressed = true;
+			    }
+			    else if(e.keyCode == 37) {
+			        leftPressed = true;
+			    }
+			    else if(e.keyCode== 38){
+			    	topPressed=true;
+			    	if (paddleSelected =1){
+			    		paddleSelected =2;
+			    		son.setAttribute("src", "2007.mp3");
+						son.play();
+
+			    	}
+			    }
+			    else if(e.keyCode==40){
+			    	downPressed= true;
+			    	if (paddleSelected =2){
+			    		paddleSelected =1;
+			    		son.setAttribute("src", "2007.mp3");
+						son.play();
+
+			    	}
+			    	
+			    }
+			}
+
+			function keyUpHandler(e) {
+			    if(e.keyCode == 39) {
+			        rightPressed = false;
+			    }
+			    else if(e.keyCode == 37) {
+			        leftPressed = false;
+			    }
+			    else if(e.keyCode== 38){
+			    	topPressed=false;
+			    }
+			    else if(e.keyCode==40){
+			    	downPressed= false;
+			    }
+			}
+
+			//balle
+			function drawBall() {
+			    ctx.beginPath();
+			    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+			    ctx.fillStyle = "#900A0A";
+			    if (dy <=0){
+			    	ctx.fillStyle="#18CE91";
+			    }
+			    ctx.fill();
+			    ctx.closePath();
+			}
+			function drawLoose(){
+				ctx.beginPath();
+				ctx.rect(0,canvas.height-looseHeight,canvas.width,looseHeight);
+				ctx.fillStyle="#900A0A";
+				ctx.fill();
+				ctx.closePath();
+			}
+			function drawWin(){
+				ctx.beginPath();
+				ctx.rect(0,0,canvas.width,winHeight);
+				ctx.fillStyle="#18CE91";
+				ctx.fill();
+				ctx.closePath();
+			}
+			//paddle1
+			function drawPaddle1() {
+			    ctx.beginPath();
+			    ctx.rect(paddle1X, paddle1Y-paddle1Height, paddle1Width, paddle1Height);
+			    ctx.fillStyle = "#0095DD";
+			    if(paddleSelected==1){
+			    	ctx.fillStyle="#B85DC6"
+			    }
+			    ctx.fill();
+			    ctx.closePath();
+			}
+			//paddle2
+			function drawPaddle2() {
+			    ctx.beginPath();
+			    ctx.rect(paddle2X, paddle2Y-paddle2Height, paddle2Width, paddle2Height);
+			    ctx.fillStyle = "#0095DD";
+			    if(paddleSelected==2){
+			    	ctx.fillStyle="#B85DC6"
+			    }
+			    ctx.fill();
+			    ctx.closePath();
+			}
+			//score
+			function drawScore() {
+    			ctx.font = "16px Arial";
+    			ctx.fillStyle = "#0095DD";
+    			ctx.fillText("Score: "+score, 40, 40);
+			}
+			//lives
+			function drawLives() {
+    			ctx.font = "16px Arial";
+    			ctx.fillStyle = "#0095DD";
+    			ctx.fillText("Lives: "+lives, canvas.width-80, 40);
+			}
+
+			function draw() {
+			    ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.drawImage(background,0,0);   
+			    drawBall();
+			    drawPaddle1();
+			    drawPaddle2();
+			    drawScore();
+			    drawLives();
+			    drawWin();
+			    drawLoose();
+			    requestAnimationFrame(draw);
+
+			    //bordures du terrain
+			    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+			        dx = -dx;
+			    }
+			    if(y + dy < ballRadius) {
+   					son.setAttribute('src', '1013.mp3');
+   					son.play();
+   					window.location.href="chargement1.html"
+				} 
+				else if(y + dy > canvas.height-ballRadius-paddle1Height) {
+   					if(x > paddle1X && x < paddle1X + paddle1Width) {
+        				dy = -dy;
+        				son.setAttribute('src', '2006.mp3');
+   						son.play();
+    				}
+    				else {
+						son.setAttribute('src', '2020.mp3');
+   						son.play();
+   						lives--;
+      					if(!lives) {
+							document.location.href="chargementOv.html";
+        					son.setAttribute('src', '12470.mp3');
+   							son.play();
+      					}
+      					else {
+        				
+           					x = canvas.width/2;
+        					y = canvas.height-30;
+        					dx = 2;
+        					dy = -2;
+        					paddle1X = (canvas.width-paddle1Width)/2;
+        					paddle1Y =canvas.height-looseHeight;
+							paddle2X = (canvas.width-paddle2Width)/2;
+							paddle2Y=canvas.height-500;
+    					}
+					}
+				}
+				else if( x >paddle2X && x < paddle2X+paddle2Width && (y+ballRadius)==(paddle2Y+paddle2Height)){
+    				dy=-dy;
+    				son.setAttribute('src', '2006.mp3');
+   					son.play();
+    			}
+
+
+			    //controle des paddles
+			    if(paddleSelected ==1 && rightPressed && paddle1X < canvas.width-paddle1Width) {
+			        paddle1X += 7;
+			    }
+			    else if(paddleSelected==1 && leftPressed && paddle1X > 0) {
+			        paddle1X -= 7;
+			    }
+			    else if(paddleSelected ==2 && rightPressed && paddle2X < canvas.width-paddle2Width) {
+			        paddle2X += 7;
+			    }
+			    else if(paddleSelected==2 && leftPressed && paddle2X > 0) {
+			        paddle2X -= 7;
+			    }
+
+			    
+			    x += dx;
+			    y += dy;
+			    score -=1;
+			}
+
+		draw();
+		</script>
+	</body>
+</html>

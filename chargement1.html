@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+    	<title>Space evasion</title>
+    	<style>
+    	* { padding: 0; margin: 0; }
+    	canvas { background: #eee; display: block; margin: 0 auto; }
+    	</style>
+    	<a src="game.html"></a>
+	</head>
+	<body>
+		<audio id="player" ></audio> 
+		<canvas id="myCanvas" width="700" height="600"></canvas>
+		<script>
+
+			var background = new Image(); 
+			background.src = 'jeu.jpg';
+			var canvas = document.getElementById("myCanvas");
+			var ctx = canvas.getContext("2d");
+			//son
+			var son= document.getElementById("player");
+			//controle
+			document.addEventListener("keydown", keyDownHandler, false);
+			document.addEventListener("keyup", keyUpHandler, false);
+			var spacePressed = false;
+
+			function keyDownHandler(e) {
+			    if(e.keyCode == 32) {
+			        spacePressed = true;
+			    }
+			}
+
+			function keyUpHandler(e){
+				if (e.keyCode ==32){
+					spacePressed= false;
+				}
+			}
+
+			function drawTxtWin() {
+    			ctx.font = "32px Arial";
+    			ctx.fillStyle = "#0095DD";
+    			ctx.fillText("Press 'space' to begin on level 2", 120, 250);
+    		}
+    		function draw() {
+  				ctx.drawImage(background,0,0);
+				drawTxtWin();
+				setTimeout(level2(),600);
+				requestAnimationFrame(draw);
+
+			}
+
+			function level2(){
+				if (spacePressed){
+					document.location.replace("level2.html");
+				}
+			}
+
+			draw();
+
+		</script>
+	</body>
+</html>
+
+
+
